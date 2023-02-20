@@ -33,6 +33,10 @@ class Othello:
 
         # setup pieces
         self.pieces = [[None for col in range(8)] for row in range(8)]
+        self.pieces[3][3] = Piece(self.board_rects[3][3].center, (255, 255, 255))
+        self.pieces[3][4] = Piece(self.board_rects[3][4].center, (0, 0, 0))
+        self.pieces[4][3] = Piece(self.board_rects[4][3].center, (0, 0, 0))
+        self.pieces[4][4] = Piece(self.board_rects[4][4].center, (255, 255, 255))
 
     def draw_objects(self):
         self.window.fill((255, 255, 255))
@@ -72,7 +76,8 @@ class Othello:
                     if collide_index != -1:
                         row, col = collide_index // 8, collide_index % 8
                         # add game logic
-                        self.pieces[row][col] = Piece(self.board_rects[row][col].center, (255, 255, 255))
+                        if self.pieces[row][col] == None:
+                            self.pieces[row][col] = Piece(self.board_rects[row][col].center, (255, 255, 255))
                         
                 # testing the flipping function
                 # if event.type == pg.KEYDOWN:
