@@ -12,7 +12,7 @@ class Othello:
         
         # set up the list of cords from the text file
         board_cords = []
-        with open("othello-assests\\board_cords.txt") as cords:
+        with open("Othello/othello-assests/board_cords.txt") as cords:
             lines = cords.readlines()
         for line in lines:
             line = line[:-1]
@@ -41,7 +41,7 @@ class Othello:
     def draw_objects(self):
         self.window.fill((255, 255, 255))
         
-        board_image = pg.image.load("othello-assests\othelloboard.png")
+        board_image = pg.image.load("Othello\othello-assests\othelloboard.png")
         self.window.blit(board_image, board_image.get_rect(center = (self.screen_width // 2, self.screen_height // 2)))
 
         # showing hitboxes for each tile
