@@ -38,8 +38,9 @@ class Othello:
         self.pieces[3][4] = Piece(self.board_rects[3][4].center, (0, 0, 0))
         self.pieces[4][3] = Piece(self.board_rects[4][3].center, (0, 0, 0))
         self.pieces[4][4] = Piece(self.board_rects[4][4].center, (255, 255, 255))
-        self.turn = 0
+        self.turn = -1
         self.mayWin = False
+        self.flanks = []
         self.board = np.array([[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]])
         
 
@@ -50,7 +51,7 @@ class Othello:
         self.board[4][3] = 0
         self.window = pg.display.set_mode((self.screen_width, self.screen_height), pg.FULLSCREEN)
         pg.display.set_caption("Othello")
-        print("board: " + str(self.board))
+        # print("board: " + str(self.board))
         self.turnFun()
         
         while True:
@@ -63,13 +64,27 @@ class Othello:
                     # with open("cords.txt", "a") as cords:
                     #     cords.write(", ".join(map(str, event.pos)))
                     #     cords.write("\n")
-
                     collide_index = pg.Rect(event.pos[0], event.pos[1], 1, 1).collidelist([rect for row in self.board_rects for rect in row])
                     if collide_index != -1:
-                        row, col = collide_index // 8, collide_index % 8
+                        col, row = collide_index // 8, collide_index % 8
+                        # print("Hit: " + str(col) + " " + str(row))
                         # add game logic
-                        if self.pieces[row][col] == None:
-                            self.pieces[row][col] = Piece(self.board_rects[row][col].center, (255, 255, 255))
+                        for x in self.flanks:
+                            # print("Poss: " + str(x[0]) + " " + str(x[1]))
+                            if (col == x[0] and row == x[1]):
+                                positions = [[x[0], x[1]]]
+                                self.flanks.clear()
+                                color = (255,255,255)
+                                if (self.turn%2 == 0):
+                                    color = (0,0,0)
+                                self.flipFlank(self.turn%2, positions)
+                                self.pieces[col][row] = Piece(self.board_rects[col][row].center, color)
+                                self.board[col][row] = self.turn%2
+                                #  find any associating flanks and flip them
+                                self.flanks.clear()
+                                self.turnFun()
+                        # if self.pieces[row][col] == None:
+                        #     self.pieces[row][col] = Piece(self.board_rects[row][col].center, (255, 255, 255))
                         
                 # testing the flipping function
                 # if event.type == pg.KEYDOWN:
@@ -101,11 +116,151 @@ class Othello:
                 if piece != None:
                     pg.draw.circle(self.window, piece.color, piece.center, 50)
 
-    def checkFlank(self, checkVal):
+    def flipFlank(self, checkVal, positions):
+        # find flanks
+        # for each in positions
+        # check each path for if it finds a two without passing over an anti
+        color = (255,255,255)
+        if (self.turn%2 == 0):
+            color = (0,0,0)
+        addCheck = 0
+        for a in positions:
+            anti = 0
+            if (checkVal == 0):
+                anti = 1
+            # up
+            if(self.board[a[0]-1][a[1]] == anti):
+                valOfUse1 = a[0]-1
+                while (valOfUse1 >= 0):
+                    if (self.board[valOfUse1][a[1]] == 2):
+                        break
+                    elif (self.board[valOfUse1][a[1]] == checkVal):
+                        valOfUse1 += 1
+                        while valOfUse1 < a[0]:
+                            self.pieces[valOfUse1][a[1]] = Piece(self.board_rects[valOfUse1][a[1]].center, color)
+                            self.board[valOfUse1][a[1]] = checkVal
+                            valOfUse1 += 1
+                        break
+                    valOfUse1 -= 1
+            # down
+            if(self.board[a[0]+1][a[1]] == anti):
+                valOfUse1 = a[0]+1
+                while (valOfUse1 <= 7):
+                    if (self.board[valOfUse1][a[1]] == 2):
+                        break
+                    elif (self.board[valOfUse1][a[1]] == checkVal):
+                        valOfUse1 -= 1
+                        while valOfUse1 > a[0]:
+                            self.pieces[valOfUse1][a[1]] = Piece(self.board_rects[valOfUse1][a[1]].center, color)
+                            self.board[valOfUse1][a[1]] = checkVal
+                            valOfUse1 -= 1
+                        break
+                    valOfUse1 += 1
+            # left
+            if(self.board[a[0]][a[1]-1] == anti):
+                valOfUse1 = a[1]-1
+                while (valOfUse1 >= 0):
+                    if (self.board[a[0]][valOfUse1] == 2):
+                        break
+                    elif (self.board[a[0]][valOfUse1] == checkVal):
+                        valOfUse1 += 1
+                        while valOfUse1 < a[1]:
+                            self.pieces[a[0]][valOfUse1] = Piece(self.board_rects[a[0]][valOfUse1].center, color)
+                            self.board[a[0]][valOfUse1] = checkVal
+                            valOfUse1 += 1
+                        break
+                    valOfUse1 -= 1
+            # right
+            if(self.board[a[0]][a[1]+1] == anti):
+                valOfUse1 = a[1]+1
+                while (valOfUse1 <= 7):
+                    if (self.board[a[0]][valOfUse1] == 2):
+                        break
+                    elif (self.board[a[0]][valOfUse1] == checkVal):
+                        valOfUse1 -= 1
+                        while valOfUse1 > a[1]:
+                            self.pieces[a[0]][valOfUse1] = Piece(self.board_rects[a[0]][valOfUse1].center, color)
+                            self.board[a[0]][valOfUse1] = checkVal
+                            valOfUse1 -= 1
+                        break
+                    valOfUse1 += 1
+            # diagon ne
+            if(self.board[a[0]-1][a[1]+1] == anti):
+                valOfUse1 = a[0]-1
+                valOfUse2 = a[1]+1
+                while (valOfUse1 >= 0 and valOfUse2 <= 7):
+                    if (self.board[valOfUse1][valOfUse2] == 2):
+                        break
+                    elif (self.board[valOfUse1][valOfUse2] == checkVal):
+                        valOfUse1 += 1
+                        valOfUse2 -= 1
+                        while valOfUse1 < a[0] and valOfUse2 > a[1]:
+                            self.pieces[valOfUse1][valOfUse2] = Piece(self.board_rects[valOfUse1][valOfUse2].center, color)
+                            self.board[valOfUse1][valOfUse2] = checkVal
+                            valOfUse1 += 1
+                            valOfUse2 -= 1
+                        break
+                    valOfUse1 -= 1
+                    valOfUse2 += 1
+            # diagon se
+            if(self.board[a[0]+1][a[1]+1] == anti):
+                valOfUse1 = a[0]+1
+                valOfUse2 = a[1]+1
+                while (valOfUse1 <= 7 and valOfUse2 <= 7):
+                    if (self.board[valOfUse1][valOfUse2] == 2):
+                        break
+                    elif (self.board[valOfUse1][valOfUse2] == checkVal):
+                        valOfUse1 -= 1
+                        valOfUse2 -= 1
+                        while valOfUse1 > a[0] and valOfUse2 > a[1]:
+                            self.pieces[valOfUse1][valOfUse2] = Piece(self.board_rects[valOfUse1][valOfUse2].center, color)
+                            self.board[valOfUse1][valOfUse2] = checkVal
+                            valOfUse1 -= 1
+                            valOfUse2 -= 1
+                        break
+                    valOfUse1 += 1
+                    valOfUse2 += 1
+            # diagon sw
+            if(self.board[a[0]+1][a[1]-1] == anti):
+                valOfUse1 = a[0]+1
+                valOfUse2 = a[1]-1
+                while (valOfUse1 <= 7 and valOfUse2 >= 0):
+                    if (self.board[valOfUse1][valOfUse2] == 2):
+                        break
+                    elif (self.board[valOfUse1][valOfUse2] == checkVal):
+                        valOfUse1 -= 1
+                        valOfUse2 += 1
+                        while valOfUse1 > a[0] and valOfUse2 < a[1]:
+                            self.pieces[valOfUse1][valOfUse2] = Piece(self.board_rects[valOfUse1][valOfUse2].center, color)
+                            self.board[valOfUse1][valOfUse2] = checkVal
+                            valOfUse1 -= 1
+                            valOfUse2 += 1
+                        break
+                    valOfUse1 += 1
+                    valOfUse2 -= 1
+            # diagon nw
+            if(self.board[a[0]-1][a[1]-1] == anti):
+                valOfUse1 = a[0]-1
+                valOfUse2 = a[1]-1
+                while (valOfUse1 >= 0 and valOfUse2 >= 0):
+                    if (self.board[valOfUse1][valOfUse2] == 2):
+                        break
+                    elif (self.board[valOfUse1][valOfUse2] == checkVal):
+                        valOfUse1 += 1
+                        valOfUse2 += 1
+                        while valOfUse1 < a[0] and valOfUse2 < a[1]:
+                            self.pieces[valOfUse1][valOfUse2] = Piece(self.board_rects[valOfUse1][valOfUse2].center, color)
+                            self.board[valOfUse1][valOfUse2] = checkVal
+                            valOfUse1 += 1
+                            valOfUse2 += 1
+                        break
+                    valOfUse1 -= 1
+                    valOfUse2 -= 1
+
+    def checkFlank(self, checkVal, positions):
         # find flanks
         print(checkVal)
-        positions = list(zip(*np.where(self.board == checkVal)))
-        print(positions)
+        print(self.board)
         # for each in positions
         # check each path for if it finds a two without passing over an anti
         addCheck = 0
@@ -115,56 +270,56 @@ class Othello:
                 anti = 1
             # up
             if(self.board[a[0]-1][a[1]] == anti):
-                print("U: " + str(self.board[a[0]-1][a[1]]))
                 valOfUse1 = a[0]-1
                 while (valOfUse1 >= 0):
                     if (self.board[valOfUse1][a[1]] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, a[1]])
                         break
                     elif (self.board[valOfUse1][a[1]] == checkVal):
                         break
                     valOfUse1 -= 1
             # down
             if(self.board[a[0]+1][a[1]] == anti):
-                print("D: " + str(self.board[a[0]+1][a[1]]))
                 valOfUse1 = a[0]+1
                 while (valOfUse1 <= 7):
                     if (self.board[valOfUse1][a[1]] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, a[1]])
                         break
                     elif (self.board[valOfUse1][a[1]] == checkVal):
                         break
                     valOfUse1 += 1
             # left
             if(self.board[a[0]][a[1]-1] == anti):
-                print("L: " + str(self.board[a[0]][a[1]-1]))
                 valOfUse1 = a[1]-1
-                while (valOfUse1 <= 0):
+                while (valOfUse1 >= 0):
                     if (self.board[a[0]][valOfUse1] == 2):
                         addCheck += 1
+                        self.flanks.append([a[0], valOfUse1])
                         break
                     elif (self.board[a[0]][valOfUse1] == checkVal):
                         break
                     valOfUse1 -= 1
             # right
             if(self.board[a[0]][a[1]+1] == anti):
-                print("R: " + str(self.board[a[0]][a[1]+1]))
                 valOfUse1 = a[1]+1
                 while (valOfUse1 <= 7):
                     if (self.board[a[0]][valOfUse1] == 2):
                         addCheck += 1
+                        self.flanks.append([a[0], valOfUse1])
                         break
                     elif (self.board[a[0]][valOfUse1] == checkVal):
                         break
                     valOfUse1 += 1
             # diagon ne
             if(self.board[a[0]-1][a[1]+1] == anti):
-                print("NE: " + str(self.board[a[0]-1][a[1]+1]))
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 >= 0 and valOfUse2 <= 7):
                     if (self.board[valOfUse1][valOfUse2] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, valOfUse2])
                         break
                     elif (self.board[valOfUse1][valOfUse2] == checkVal):
                         break
@@ -172,12 +327,12 @@ class Othello:
                     valOfUse2 += 1
             # diagon se
             if(self.board[a[0]+1][a[1]+1] == anti):
-                print("SE: " + str(self.board[a[0]+1][a[1]+1]))
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 <= 7 and valOfUse2 <= 7):
                     if (self.board[valOfUse1][valOfUse2] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, valOfUse2])
                         break
                     elif (self.board[valOfUse1][valOfUse2] == checkVal):
                         break
@@ -185,12 +340,12 @@ class Othello:
                     valOfUse2 += 1
             # diagon sw
             if(self.board[a[0]+1][a[1]-1] == anti):
-                print("SW: " + str(self.board[a[0]+1][a[1]-1]))
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 <= 7 and valOfUse2 >= 0):
                     if (self.board[valOfUse1][valOfUse2] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, valOfUse2])
                         break
                     elif (self.board[valOfUse1][valOfUse2] == checkVal):
                         break
@@ -198,12 +353,12 @@ class Othello:
                     valOfUse2 -= 1
             # diagon nw
             if(self.board[a[0]-1][a[1]-1] == anti):
-                print("NW: " + str(self.board[a[0]-1][a[1]-1]))
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 >= 0 and valOfUse2 >= 0):
                     if (self.board[valOfUse1][valOfUse2] == 2):
                         addCheck += 1
+                        self.flanks.append([valOfUse1, valOfUse2])
                         break
                     elif (self.board[valOfUse1][valOfUse2] == checkVal):
                         break
@@ -219,26 +374,27 @@ class Othello:
     # if no flank is possible next persons turn
 
     def turnFun(self):
+        self.turn += 1
         if (self.turn % 2 == 0):
             # check black
-            available = self.checkFlank(0)
+            positions = list(zip(*np.where(self.board == 0)))
+            print(positions)
+            available = self.checkFlank(0, positions)
             if (available > 0):
                 self.mayWin = False
-                self.turn += 1
             elif (not self.mayWin):
-                self.turn += 1
                 self.mayWin = True
                 self.turnFun()
             else:
                 self.gameEnd()
         elif (self.turn % 2 == 1):
             # check white
-            available = self.checkFlank(1)
+            positions = list(zip(*np.where(self.board == 1)))
+            print(positions)
+            available = self.checkFlank(1, positions)
             if (available > 0):
                 self.mayWin = False
-                self.turn += 1
             elif (not self.mayWin):
-                self.turn += 1
                 self.mayWin = True
                 self.turnFun()
             else:
