@@ -129,7 +129,7 @@ class Othello:
             if (checkVal == 0):
                 anti = 1
             # up
-            if(self.board[a[0]-1][a[1]] == anti):
+            if(a[0] != 0 and self.board[a[0]-1][a[1]] == anti):
                 valOfUse1 = a[0]-1
                 while (valOfUse1 >= 0):
                     if (self.board[valOfUse1][a[1]] == 2):
@@ -143,7 +143,7 @@ class Othello:
                         break
                     valOfUse1 -= 1
             # down
-            if(self.board[a[0]+1][a[1]] == anti):
+            if(a[0] != 7 and self.board[a[0]+1][a[1]] == anti):
                 valOfUse1 = a[0]+1
                 while (valOfUse1 <= 7):
                     if (self.board[valOfUse1][a[1]] == 2):
@@ -157,7 +157,7 @@ class Othello:
                         break
                     valOfUse1 += 1
             # left
-            if(self.board[a[0]][a[1]-1] == anti):
+            if(a[1] != 0 and self.board[a[0]][a[1]-1] == anti):
                 valOfUse1 = a[1]-1
                 while (valOfUse1 >= 0):
                     if (self.board[a[0]][valOfUse1] == 2):
@@ -171,7 +171,7 @@ class Othello:
                         break
                     valOfUse1 -= 1
             # right
-            if(self.board[a[0]][a[1]+1] == anti):
+            if(a[1] != 7 and self.board[a[0]][a[1]+1] == anti):
                 valOfUse1 = a[1]+1
                 while (valOfUse1 <= 7):
                     if (self.board[a[0]][valOfUse1] == 2):
@@ -185,7 +185,7 @@ class Othello:
                         break
                     valOfUse1 += 1
             # diagon ne
-            if(self.board[a[0]-1][a[1]+1] == anti):
+            if(a[0] != 0 and a[1] != 7 and self.board[a[0]-1][a[1]+1] == anti):
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 >= 0 and valOfUse2 <= 7):
@@ -203,7 +203,7 @@ class Othello:
                     valOfUse1 -= 1
                     valOfUse2 += 1
             # diagon se
-            if(self.board[a[0]+1][a[1]+1] == anti):
+            if(a[0] != 7 and a[1] != 7 and self.board[a[0]+1][a[1]+1] == anti):
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 <= 7 and valOfUse2 <= 7):
@@ -221,7 +221,7 @@ class Othello:
                     valOfUse1 += 1
                     valOfUse2 += 1
             # diagon sw
-            if(self.board[a[0]+1][a[1]-1] == anti):
+            if(a[0] != 7 and a[1] != 0 and self.board[a[0]+1][a[1]-1] == anti):
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 <= 7 and valOfUse2 >= 0):
@@ -239,7 +239,7 @@ class Othello:
                     valOfUse1 += 1
                     valOfUse2 -= 1
             # diagon nw
-            if(self.board[a[0]-1][a[1]-1] == anti):
+            if(a[0] != 0 and a[1] != 0 and self.board[a[0]-1][a[1]-1] == anti):
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 >= 0 and valOfUse2 >= 0):
@@ -269,7 +269,7 @@ class Othello:
             if (checkVal == 0):
                 anti = 1
             # up
-            if(self.board[a[0]-1][a[1]] == anti):
+            if(a[0] != 0 and self.board[a[0]-1][a[1]] == anti):
                 valOfUse1 = a[0]-1
                 while (valOfUse1 >= 0):
                     if (self.board[valOfUse1][a[1]] == 2):
@@ -280,7 +280,7 @@ class Othello:
                         break
                     valOfUse1 -= 1
             # down
-            if(self.board[a[0]+1][a[1]] == anti):
+            if(a[0] != 7 and self.board[a[0]+1][a[1]] == anti):
                 valOfUse1 = a[0]+1
                 while (valOfUse1 <= 7):
                     if (self.board[valOfUse1][a[1]] == 2):
@@ -291,7 +291,7 @@ class Othello:
                         break
                     valOfUse1 += 1
             # left
-            if(self.board[a[0]][a[1]-1] == anti):
+            if(a[1] != 0 and self.board[a[0]][a[1]-1] == anti):
                 valOfUse1 = a[1]-1
                 while (valOfUse1 >= 0):
                     if (self.board[a[0]][valOfUse1] == 2):
@@ -302,7 +302,7 @@ class Othello:
                         break
                     valOfUse1 -= 1
             # right
-            if(self.board[a[0]][a[1]+1] == anti):
+            if(a[1] != 7 and self.board[a[0]][a[1]+1] == anti):
                 valOfUse1 = a[1]+1
                 while (valOfUse1 <= 7):
                     if (self.board[a[0]][valOfUse1] == 2):
@@ -313,7 +313,7 @@ class Othello:
                         break
                     valOfUse1 += 1
             # diagon ne
-            if(self.board[a[0]-1][a[1]+1] == anti):
+            if(a[0] != 0 and a[1] != 7 and self.board[a[0]-1][a[1]+1] == anti):
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 >= 0 and valOfUse2 <= 7):
@@ -326,7 +326,7 @@ class Othello:
                     valOfUse1 -= 1
                     valOfUse2 += 1
             # diagon se
-            if(self.board[a[0]+1][a[1]+1] == anti):
+            if(a[0] != 7 and a[1] != 7 and self.board[a[0]+1][a[1]+1] == anti):
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]+1
                 while (valOfUse1 <= 7 and valOfUse2 <= 7):
@@ -339,7 +339,7 @@ class Othello:
                     valOfUse1 += 1
                     valOfUse2 += 1
             # diagon sw
-            if(self.board[a[0]+1][a[1]-1] == anti):
+            if(a[0] != 7 and a[1] != 0 and self.board[a[0]+1][a[1]-1] == anti):
                 valOfUse1 = a[0]+1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 <= 7 and valOfUse2 >= 0):
@@ -352,7 +352,7 @@ class Othello:
                     valOfUse1 += 1
                     valOfUse2 -= 1
             # diagon nw
-            if(self.board[a[0]-1][a[1]-1] == anti):
+            if(a[0] != 0 and a[1] != 0 and self.board[a[0]-1][a[1]-1] == anti):
                 valOfUse1 = a[0]-1
                 valOfUse2 = a[1]-1
                 while (valOfUse1 >= 0 and valOfUse2 >= 0):
